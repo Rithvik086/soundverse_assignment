@@ -1,13 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
-from database import get_db
+from database import get_db, engine, Base  
 import crud, schemas
 from typing import List
 from uuid import UUID
+import asyncio
+from sqlalchemy.exc import OperationalError
 
 app = FastAPI()
 
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,6 +19,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Startup event to create tables
+@app.on_event("startup")
+async def startup_event():
+    for _ in range(5):  # retry a few times in case DB is not ready
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            print("Database tables initialized")
+            break
+        except OperationalError:
+            print("Database not ready, retrying in 3 seconds...")
+            await asyncio.sleep(3)
+
+# Routes
 @app.get("/artists", response_model=List[schemas.Artist])
 async def read_artists(db: AsyncSession = Depends(get_db)):
     return await crud.get_artists(db)
