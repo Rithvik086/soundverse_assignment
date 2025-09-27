@@ -72,7 +72,7 @@ export default function ArtistsPage() {
               {/* Image header (use <img> for reliable rendering) */}
               <div className="relative h-40 sm:h-44 lg:h-48 w-full overflow-hidden bg-[#111]">
                 <img
-                  src={artist.profile_image_url || "/user.png"}
+                  src={ "/user1.jpg"}
                   alt={artist.creator_name}
                   className="absolute inset-0 w-full h-full object-cover object-center"
                   onError={(e) => {
