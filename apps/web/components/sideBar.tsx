@@ -1,9 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function SideBar() {
     const [isOpen, setIsOpen] = useState(false);
+    const router = useRouter();
 
     return (
         <>
@@ -79,7 +81,13 @@ export default function SideBar() {
                 </div>
 
                 {/* Bottom DNA button */}
-                <div className="w-[45px] h-[35px] sm:w-[50px] sm:h-[38px] md:w-[52px] md:h-[40px] lg:w-[54px] lg:h-[43px] bg-[#1C1E1F] font-bold text-[10px] sm:text-[11px] md:text-[12px] lg:text-[13px] text-white flex items-center justify-center rounded-[8px] sm:rounded-[9px] md:rounded-[10px] lg:rounded-[11px] mt-3 sm:mt-4">
+                <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => router.push('/artists')}
+                    onKeyDown={(e) => { if (e.key === 'Enter') router.push('/artists'); }}
+                    className="w-[45px] h-[35px] sm:w-[50px] sm:h-[38px] md:w-[52px] md:h-[40px] lg:w-[54px] lg:h-[43px] bg-[#1C1E1F] font-bold text-[10px] sm:text-[11px] md:text-[12px] lg:text-[13px] text-white flex items-center justify-center rounded-[8px] sm:rounded-[9px] md:rounded-[10px] lg:rounded-[11px] mt-3 sm:mt-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/20"
+                >
                     <span>DNA</span>
                 </div>
             </div>
