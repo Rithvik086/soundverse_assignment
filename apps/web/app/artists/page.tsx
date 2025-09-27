@@ -45,62 +45,130 @@ export default function ArtistsPage() {
 
   return (
     <div className="min-h-screen bg-[#0e0e0f] p-4 sm:p-6 lg:p-8">
-      <h1 className="text-2xl sm:text-3xl text-white font-bold mb-6 sm:mb-8 ml-12 sm:ml-16 lg:ml-0">Artists</h1>
+      <h1 className="text-2xl sm:text-3xl text-white font-bold mb-6 sm:mb-8 ml-12 sm:ml-16 lg:ml-0">
+        Artists
+      </h1>
       {error && <div className="text-red-500 mb-4">{error}</div>}
       {!loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {artists.length === 0 && !error && (
             <div className="col-span-full flex flex-col items-center justify-center w-full">
-              <img src="/user.png" alt="No artists" className="w-20 sm:w-24 h-20 sm:h-24 rounded-full object-cover mb-4 border border-[#383838]" />
-              <span className="text-[#bdbdbd] text-base sm:text-lg">No artists found.</span>
+              <img
+                src="/user.png"
+                alt="No artists"
+                className="w-20 sm:w-24 h-20 sm:h-24 rounded-full object-cover mb-4 border border-[#383838]"
+              />
+              <span className="text-[#bdbdbd] text-base sm:text-lg">
+                No artists found.
+              </span>
             </div>
           )}
+
           {artists.map((artist) => (
-            <div key={artist.id} className="rounded-2xl shadow-lg shadow-black/30 border border-[#383838] flex flex-col justify-between items-stretch min-h-[380px] sm:min-h-[420px] lg:min-h-[440px] max-h-[380px] sm:max-h-[420px] lg:max-h-[440px] h-[380px] sm:h-[420px] lg:h-[440px] p-0 transition-transform hover:scale-[1.02] sm:hover:scale-[1.035] w-full max-w-[340px] mx-auto" style={{ background: 'linear-gradient(135deg, #1f1f1f 0%, #2a2a2a 100%)' }}>
-              {/* Card Header */}
-              <div className="flex flex-col items-center p-4 sm:p-5 lg:p-6 pb-2 sm:pb-3">
+            <article
+              key={artist.id}
+              className="group relative w-full max-w-[360px] mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-[#171718] to-[#242426] border border-[#2d2d2f] shadow-lg shadow-black/40 transform transition-all hover:scale-[1.03]"
+            >
+              {/* Image header (use <img> for reliable rendering) */}
+              <div className="relative h-40 sm:h-44 lg:h-48 w-full overflow-hidden bg-[#111]">
                 <img
-                  src={"/user.png"}
+                  src={artist.profile_image_url || "/user.png"}
                   alt={artist.creator_name}
-                  className="w-16 sm:w-18 lg:w-20 h-16 sm:h-18 lg:h-20 rounded-full object-cover mb-2 sm:mb-3 border-2 border-[#383838] shadow-lg"
+                  className="absolute inset-0 w-full h-full object-cover object-center"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/user.png";
+                  }}
                 />
-                <h2 className="text-2xl sm:text-2xl lg:text-3xl text-white font-extrabold mb-1 text-center w-full truncate">{artist.creator_name}</h2>
-                <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 justify-center w-full">
-                  {artist.tags && artist.tags.map((tag) => (
-                    <span key={tag} className="bg-[#232326] text-[#bdbdbd] text-xs px-2 sm:px-3 py-1 rounded-full font-medium">{tag}</span>
-                  ))}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+                <div className="absolute inset-x-0 bottom-3 flex flex-col items-center text-center px-4">
+                  <div className="text-white">
+                    <h2 className="text-lg sm:text-xl font-bold leading-tight truncate">
+                      {artist.creator_name}
+                    </h2>
+                    <div className="flex flex-wrap gap-2 justify-center mt-2">
+                      {artist.tags &&
+                        artist.tags.slice(0, 3).map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[12px] px-2 py-0.5 rounded-full bg-white/6 text-white/85"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+                {/* quick status pill */}
+                <div className="absolute right-3 top-3">
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full font-semibold ${artist.status === "active" ? "bg-green-600 text-white" : "bg-gray-700 text-gray-200"}`}
+                  >
+                    {artist.status ?? "unknown"}
+                  </span>
                 </div>
               </div>
-              {/* Description with scroll */}
-              <div className="px-4 sm:px-5 lg:px-6 mb-2">
-                <div className="rounded-lg p-2 sm:p-3 min-h-[48px] sm:min-h-[56px] max-h-[64px] sm:max-h-[72px] overflow-y-auto text-[#e0e0e0] text-[14px] sm:text-[15px] lg:text-[16px] font-[600] text-center custom-scrollbar" style={{ background: 'transparent' }}>
-                  {artist.description}
+
+              {/* Body */}
+              <div className="p-4 sm:p-5 flex flex-col gap-3">
+                <p className="text-[13px] sm:text-sm text-[#d6d6d6] leading-relaxed max-h-[84px] overflow-y-auto custom-scrollbar">
+                  {artist.description || "No description provided."}
+                </p>
+
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex flex-col">
+                    <span className="text-[12px] text-[#bdbdbd]">DNA</span>
+                    <strong className="text-sm text-white">
+                      {artist.dna_visibility ?? "—"}
+                    </strong>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[12px] text-[#bdbdbd]">Price</span>
+                    <strong className="text-sm text-white">
+                      {artist.price ? `$${artist.price}` : "Free"}
+                    </strong>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[12px] text-[#bdbdbd]">License</span>
+                    <strong className="text-sm text-white">
+                      {artist.license_type ?? "—"}
+                    </strong>
+                  </div>
+                </div>
+
+                {/* Audio preview + actions */}
+                <div className="flex flex-col gap-2">
+                  {artist.audio_preview_url ? (
+                    <audio
+                      controls
+                      src={artist.audio_preview_url}
+                      className="w-full rounded-md bg-black/40"
+                    />
+                  ) : (
+                    <div className="text-[12px] text-[#8b8b8b]">
+                      No preview available
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <button className="flex-1 py-2 px-3 rounded-lg bg-[#6A35EE] hover:bg-[#5a2bdc] text-white text-sm font-semibold transition">
+                      Follow
+                    </button>
+                    <button className="py-2 px-3 rounded-lg bg-white/6 hover:bg-white/10 text-white text-sm">
+                      Message
+                    </button>
+                  </div>
                 </div>
               </div>
-              {/* Card Attributes */}
-              <div className="px-4 sm:px-5 lg:px-6 flex flex-col gap-1 mb-2">
-                <div className="text-white text-xs sm:text-sm">DNA Visibility: <span className="font-semibold">{artist.dna_visibility}</span></div>
-                <div className="text-white text-xs sm:text-sm">Price: <span className="font-semibold">{artist.price ? `$${artist.price}` : "Free"}</span></div>
-                <div className="text-white text-xs sm:text-sm">License: <span className="font-semibold">{artist.license_type}</span></div>
-                <div className="text-white text-xs sm:text-sm">Status: <span className="font-semibold">{artist.status}</span></div>
-              </div>
-              {/* Card Footer */}
-              <div className="w-full flex items-center justify-center px-4 sm:px-5 lg:px-6 pb-3 sm:pb-4 mt-auto">
-                {artist.audio_preview_url && (
-                  <a href={artist.audio_preview_url} target="_blank" rel="noopener noreferrer" className="text-[#6A35EE] text-xs sm:text-sm underline break-all w-full text-center truncate">
-                    {artist.audio_preview_url}
-                  </a>
-                )}
-              </div>
-            </div>
+            </article>
           ))}
         </div>
       )}
+
       {/* Add custom scrollbar styling */}
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {
-          width: 4px sm:width-6px;
-          background: #232326;
+          width: 6px;
+          background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
           background: #383838;
@@ -109,4 +177,4 @@ export default function ArtistsPage() {
       `}</style>
     </div>
   );
-} 
+}
